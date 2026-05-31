@@ -1,0 +1,25 @@
+name: Daily Scraper
+on:
+  workflow_dispatch: # Allows manual run button
+  schedule:
+    - cron: '0 8 * * *' # Runs at 8 AM UTC daily
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run scraper
+        run: python scraper.py
+      - name: Commit results
+        run: |
+          git config --global user.name "Scraper Bot"
+          git config --global user.email "bot@example.com"
+          git add results.csv
+          git commit -m "Update leads" || exit 0
+          git push
